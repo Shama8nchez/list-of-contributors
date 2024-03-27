@@ -7,11 +7,13 @@ export const Card = ({ avatar, login, contributions, url }) => {
   const [active, setActive] = useState(false);
   const [error, setError] = useState(false);
   const [user, setUser] = useState();
+  const [disabled, setDisabled] = useState(false);
 
   const handleClick = async () => {
     if (user) setActive(!active);
     else if (active) setActive(false);
-    else
+    else if (!disabled) {
+      setDisabled(true);
       getContributor(login)
         .then(rez => {
           if (!rez.ok) throw new Error(ERROR_NOTIFICATION);
@@ -21,7 +23,11 @@ export const Card = ({ avatar, login, contributions, url }) => {
           setUser(rez);
         })
         .catch(() => setError(true))
-        .finally(() => setActive(true));
+        .finally(() => {
+          setActive(true);
+          setDisabled(false);
+        });
+    }
   };
 
   return (
